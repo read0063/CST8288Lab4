@@ -3,9 +3,11 @@
  */
 package com.algonquin.loggy;
 
-/**
- * @author jesus
- *
+import java.util.Arrays;
+import java.util.List;
+
+/**@author mreade using source material provided in Lab instructions
+ * @version Assignment4
  */
 public class ImageFile extends File {
 
@@ -18,6 +20,15 @@ public class ImageFile extends File {
     public ImageFile(String name, String type, String content, Long size) {
         super(name, type, content, size);
     }
+
+    private static final List<String> contentTypes = Arrays.asList("PNG", "JPG", "GIF", "SVG");//Moira moved here from ImageLog and changed from public to private
+
+    //method from Attachable
+    @Override
+    public boolean isValidContentType(String type) {//Moira moved this here from AudioLog and removed reference to the AudioLog
+        return contentTypes.contains(type);
+    }
+    //method from Attachable
 
     /**
      *

@@ -1,6 +1,6 @@
 package com.algonquin.loggy;
 
-public class File implements Processable {
+public abstract class File implements Processable, Attachable {
 
     private String name;
     private String type;
@@ -49,9 +49,13 @@ public class File implements Processable {
         this.size = size;
     }
 
+    //method from Processable
     @Override
     public void postProcess() {
         System.out.println("Default post processing");
     }
+    //method from Processable
 
+    public abstract boolean isValidContentType(String contentType);
+    //methods from Attachable
 }

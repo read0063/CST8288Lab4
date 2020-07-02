@@ -1,10 +1,8 @@
 package com.algonquin.loggy;
 
-import java.util.Date;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
-public abstract class Log implements Attachable {
+public class Log {
 
     private String name;
     private String description;
@@ -12,13 +10,24 @@ public abstract class Log implements Attachable {
     private UUID uuid;
     private String code;
     private File attachment;
+    private LogType logType;//Moira added type to the attributes of a Log
+
 
     public File getAttachment() {
         return attachment;
     }
 
-    public void setAttachment(File attachment) {
-        this.attachment = attachment;
+    public void setAttachment(File attachment) throws Exception {
+        //Moira call the Attachable method attachFile from File to set
+        if(attachment.isValidContentType(attachment.getType())){
+            System.out.println("Attaching " + attachment.getName() + " to " + this.getName());
+            this.attachment = attachment;
+            attachment.postProcess();
+        } else {
+            System.out.println("ContentType " + attachment.getType() + " can not be attached");
+            throw new Exception("ContentType " + attachment.getType() + " can not be attached");
+        }
+
     }
 
     public void create() {
@@ -77,17 +86,19 @@ public abstract class Log implements Attachable {
         this.date = null;
         this.uuid = null;
         this.code = null;
+        this.logType = null;//Moira added type to the log attributes
     }
 
-    public Log(String name) {
-        this(name, "");
+    public Log(LogType logType, String name) {
+        this(logType, name, "", new Date());//Moira default LogType is text
     }
 
-    public Log(String name, String description) {
-        this(name, description, new Date());
+    public Log(LogType logType, String name, String description) {
+        this(logType, name, description, new Date());
     }
 
-    public Log(String name, String description, Date date) {
+    public Log(LogType logType, String name, String description, Date date) {
+        this.logType = logType;
         this.name = name;
         this.description = description;
         this.date = date;
@@ -101,30 +112,6 @@ public abstract class Log implements Attachable {
             out += " with attachment " + this.attachment.getName();
         }
         return out;
-    }
-
-    @Override
-    public void attachFile(String name, String type, String content, Long size) throws Exception {
-        if (!isValidContentType(type)) {
-            System.out.println("ContentType " + type + " can not be attached");
-            throw new Exception("ContentType " + type + " can not be attached");
-        }
-    }
-
-    @Override
-    public void attachFile(File file) throws Exception {
-        String type = file.getType();
-        if (!isValidContentType(type)) {
-            System.out.println("ContentType " + type + " can not be attached");
-            throw new Exception("ContentType " + type + " can not be attached");
-        }
-        this.setAttachment(file);
-        file.postProcess();
-    }
-
-    @Override
-    public boolean isValidContentType(String type) {
-        return false;
     }
 
     private String shortCode() {
